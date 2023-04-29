@@ -1,47 +1,42 @@
 import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-// console.log(galleryItems);
+console.log(galleryItems);
 
-// const gallery = document.querySelector(".gallery");
-// const items = [];
+const galleryMarkupEl = document.querySelector("ul.gallery");
+const addMarkupItemsEl = addMarkupItems(galleryItems);
+galleryMarkupEl.insertAdjacentHTML("beforeend", addMarkupItemsEl);
 
-// galleryItems.forEach((element) => {
-//   const galleryItem = document.createElement("div");
-//   galleryItem.className = "gallery__item";
-//   const galleryLink = document.createElement("a");
-//   galleryLink.className = "gallery__link";
-//   galleryLink.href = element.original;
-//   const galleryImage = document.createElement("img");
-//   galleryImage.className = "gallery__image";
-//   galleryImage.src = element.preview;
-//   galleryImage.setAttribute("data-source", element.original);
-//   galleryImage.alt = element.description;
+function addMarkupItems(galleryItems) {
+  return galleryItems
+    .map(({ preview, original, description }) => {
+      return `
+         <div class = "gallery__item">
+         <a class = "gallery__link" href = "${original}">
+         <img class = "gallery__image" src="${preview}" data-source="${original}" alt="${description}">
+         </a>
+         </div>
+        `;
+    })
+    .join("");
+}
+const openImgInModal = (event) => {
+  event.preventDefault();
+  if (event.target.nodeName !== "IMG") return;
 
-//   galleryItem.append(galleryLink);
-//   galleryLink.append(galleryImage);
-//   items.push(galleryItem);
-// });
+  const getOriginalUrl = event.target.dataset.source;
+  const instance = basicLightbox.create(
+    `<div class="modal"> <img src = "${getOriginalUrl}"></div>`
+  );
+  instance.show();
 
-// gallery.append(...items);
+  const visible = basicLightbox.visible(
+    document.addEventListener("keydown", (event) => {
+      if (event.code === "Escape") {
+        instance.close();
+      }
+    })
+  );
+};
 
-// gallery.addEventListener("click", (e) => {
-//   e.preventDefault();
-//   if (e.target.nodeName !== "IMG") {
-//     return;
-//   }
-
-//   const selectedImage = e.target.getAttribute("data-source");
-
-//   const instance = basicLightbox.create(`
-//     <img src="${selectedImage}" width="800" height="600">
-// `);
-
-//   instance.show();
-
-//   gallery.addEventListener("keydown", (e) => {
-//     if (e.key === "Escape") {
-//       instance.close();
-//     }
-//   });
-// });
+galleryMarkupEl.addEventListener("click", openImgInModal);
