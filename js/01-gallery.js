@@ -20,23 +20,29 @@ function addMarkupItems(galleryItems) {
     })
     .join("");
 }
+
 const openImgInModal = (event) => {
   event.preventDefault();
   if (event.target.nodeName !== "IMG") return;
 
   const getOriginalUrl = event.target.dataset.source;
   const instance = basicLightbox.create(
-    `<div class="modal"> <img src = "${getOriginalUrl}"></div>`
-  );
-  instance.show();
+    `<div class="modal"> <img src = "${getOriginalUrl}"></div>`,
+    {
+      onShow: (instance) =>
+        window.addEventListener("keydown", closingFooForModal),
 
-  const visible = basicLightbox.visible(
-    document.addEventListener("keydown", (event) => {
-      if (event.code === "Escape") {
-        instance.close();
-      }
-    })
+      onClose: (instance) =>
+        window.removeEventListener("keydown", closingFooForModal),
+    }
   );
+
+  const closingFooForModal = (event) => {
+    if (event.code === "Escape") {
+      instance.close();
+    }
+  };
+  instance.show();
 };
 
 galleryMarkupEl.addEventListener("click", openImgInModal);
